@@ -1,6 +1,8 @@
 #!/bin/python
 # coding=utf-8
 import argparse
+import difflib
+import fnmatch
 import logging
 import ntpath
 import os
@@ -17,9 +19,8 @@ from lib2to3.fixer_util import Comma
 from lib2to3.pgen2 import driver
 from lib2to3.pytree import Leaf
 from textwrap import dedent
-
 logging.basicConfig()
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("error_number_fixer")
 
 PATTERN = """
     power< call='result' + trailer< '.' attr='error' > trailer< lpar='('
@@ -47,11 +48,12 @@ class FixLoggerErrorNumber(BaseFix):
     def transform(self, node, results):
         self.count += 1
         if 'arg_2' in results:
-            logger.debug("found 2", results['arg_1'], results['arg_2'])
+            logger.debug("found 2 [%s %s]" %
+                         (results['arg_1'], results['arg_2']))
             error_no = results['arg_1']
             error_no.replace(Leaf(type=2, value=self.count))
         else:
-            logger.debug("found 1", results['arg_1'])
+            logger.debug("found 1 [%s]" % results['arg_1'])
             siblings_list = results['arg_1'].parent.children
             siblings_list.insert(1, Leaf(type=2, value=self.count))
             siblings_list.insert(2, Comma())
@@ -171,7 +173,7 @@ def main(argv=None):
                             default=True)
         parser.add_argument("-b", "--backup", dest="backup", action="store_true",
                             help="Backup file before refactoring",
-                            default=True)
+                            default=False)
         parser.add_argument("-v", "--verbose", dest="verbose",
                             action="count", help="set verbosity level",
                             default=0)
@@ -202,15 +204,16 @@ def main(argv=None):
             source_files.append(input_dir)
         elif os.path.isdir(input_dir):
             for (dir_path, dir_names, file_names) in os.walk(input_dir):
-                source_files.extend(file_names)
-                break
+                for file_name in fnmatch.filter(file_names, '*.py'):
+                    file_name = os.path.join(dir_path, file_name)
+                    source_files.append(file_name)
         else:
             raise Exception(
                 "Invalid file or directory path specified.\nPlease verify if the path exists")
 
         if source_files:
             for source_file in source_files:
-                logger.info(
+                logger.debug(
                     "Fixing error number in plugin file at: [%s]" % source_file)
 
                 # check backup
@@ -221,13 +224,28 @@ def main(argv=None):
 
                 modified_code = generate_fixed_code(source_code, error_series)
 
-                if write:
-                    write_to_file(source_file, modified_code, append_suffix)
-                elif output_dir:
-                    write_to_file(output_dir, modified_code, append_suffix)
+                # generate code diff
+                diffed_lines = []
+                for line in difflib.context_diff(
+                        source_code.splitlines(),
+                        modified_code.splitlines(),
+                        fromfile='Before Fix',
+                        tofile='After Fix',
+                        n=0):
+                    diffed_lines.append(line)
+
+                code_diff = "".join(diffed_lines)
+
+                if code_diff:
+                    print(code_diff)
+                    if write:
+                        write_to_file(
+                            source_file, modified_code, append_suffix)
+                    elif output_dir:
+                        write_to_file(output_dir, modified_code, append_suffix)
 
         else:
-            logger.info("No file found in the input directory")
+            logger.debug("No file found in the input directory")
             sys.exit(1)
 
         sys.exit(0)
