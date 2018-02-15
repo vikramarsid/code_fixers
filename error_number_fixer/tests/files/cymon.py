@@ -3,7 +3,8 @@
 """
 **Module**: Cymon.io Plugin
        :platform: Linux
-       :synopsis: FSO Plugin to allow to easily synchronize the Threat Intelligence available in Cymon.io.
+       :synopsis: FSO Plugin to allow to easily synchronize the
+       Threat Intelligence available in Cymon.io.
 .. moduleauthor:: Vikram Arsid
 """
 import functools
@@ -22,7 +23,7 @@ from urllib3 import Retry
 
 __author__ = "Vikram Arsid"
 __dependency__ = '{"requests": "2.8.14"}'
-__notes__ = """The Cymon plugin allows you to easily synchronize the 
+__notes__ = """The Cymon plugin allows you to easily synchronize the
 Threat Intelligence to the tools you use to monitor your environment."""
 __fso_version__ = "4.2.0"
 
@@ -78,7 +79,8 @@ class LookupDetails(UserComplexType):
 
     class DomainName(UserComplexType):
         __description__ = "IP details"
-        black_list = (parameters.DomainName.list, "Blacklisted DomainName list")
+        black_list = (parameters.DomainName.list,
+                      "Blacklisted DomainName list")
         unknown_list = (parameters.DomainName.list, "Unknown DomainName list")
         hits = (Indicators.list, "indicator details")
 
@@ -118,7 +120,8 @@ class LookupDetails(UserComplexType):
 
     class SHA256(UserComplexType):
         __description__ = "SHA256 details"
-        black_list = (parameters.FileHashSHA256.list, "Blacklisted SHA256 list")
+        black_list = (parameters.FileHashSHA256.list,
+                      "Blacklisted SHA256 list")
         unknown_list = (parameters.FileHashSHA256.list, "Unknown SHA256 list")
         hits = (Indicators.list, "indicator details")
 
@@ -184,7 +187,8 @@ def handle_errors(func):
         except KeyError as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(16001, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(
+                16001, 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.trace('Missing parameter value: '.format(exc))
             result.success = False
             result['statusMsg'] = parameters.String('Missing parameter value.'
@@ -194,10 +198,13 @@ def handle_errors(func):
         except Exception as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(16002, 'Caught exception {} running command {}'.format(tb, func.__name__))
-            result.trace('Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(
+                16002, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            result.trace(
+                'Caught exception {} running command {}'.format(tb, func.__name__))
             result.success = False
-            result['statusMsg'] = parameters.String('Error running command: {}'.format(tb))
+            result['statusMsg'] = parameters.String(
+                'Error running command: {}'.format(tb))
             result['success'] = parameters.Bool(False)
         return result
 
@@ -300,22 +307,22 @@ class Cymon(ISODevicePlugin):
                 ISODevicePlugin.InputParameter(
                     typ=parameters.FileHashMD5.list,
                     name='MD5',
-                    description="Any MD5 hash that summarizes the architecture and content of a file.",
+                    description="Any MD5 hash that summarizes the arch",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.FileHashSHA1.list,
                     name='SHA1',
-                    description="Any SHA1 hash that summarizes the architecture and content of a file.",
+                    description="Any SHA1 hash that summarizes the",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.FileHashSHA256.list,
                     name='SHA256',
-                    description="Any SHA256 hash that summarizes the architecture and content of a file.",
+                    description="Any SHA256 hash that summarize",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.String.list,
                     name='SSDEEP',
-                    description="Any SSDEEP hash that summarizes the architecture and content of a file.",
+                    description="Any SSDEEP hash that summarizes th",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.DateTime,
@@ -439,9 +446,11 @@ class Cymon(ISODevicePlugin):
             lookup_results["keyword"] = self._process_indicator(result, "term", keyword_list, start_date, end_date,
                                                                 max_hits)
         if md5_list:
-            lookup_results["md5"] = self._process_indicator(result, "md5", md5_list, start_date, end_date, max_hits)
+            lookup_results["md5"] = self._process_indicator(
+                result, "md5", md5_list, start_date, end_date, max_hits)
         if sha1_list:
-            lookup_results["sha1"] = self._process_indicator(result, "sha1", sha1_list, start_date, end_date, max_hits)
+            lookup_results["sha1"] = self._process_indicator(
+                result, "sha1", sha1_list, start_date, end_date, max_hits)
         if sha256_list:
             lookup_results["sha256"] = self._process_indicator(result, "sha256", sha256_list, start_date, end_date,
                                                                max_hits)
@@ -452,7 +461,8 @@ class Cymon(ISODevicePlugin):
         if lookup_results:
             success = True
             status_msg = "Successfully fetched IOC lookup results"
-            result['lookupResults'] = parameters.cymon.LookupDetails(lookup_results)
+            result['lookupResults'] = parameters.cymon.LookupDetails(
+                lookup_results)
         else:
             status_msg = "No results found"
 
@@ -470,12 +480,14 @@ class Cymon(ISODevicePlugin):
         feed_id_list = self._get_parameters(request, 'feedId', True)
         feed_results = None
         if feed_id_list:
-            feed_results = self._process_indicator(result, "feed", feed_id_list)
+            feed_results = self._process_indicator(
+                result, "feed", feed_id_list)
 
         if feed_results:
             success = True
             status_msg = "Successfully fetched feed details"
-            result['feedDetails'] = parameters.cymon.FeedDetails.list(feed_results)
+            result['feedDetails'] = parameters.cymon.FeedDetails.list(
+                feed_results)
         else:
             status_msg = "No results found"
 
@@ -498,7 +510,8 @@ class Cymon(ISODevicePlugin):
         unknown_list = set()
         for indicator in indicator_data:
             result.trace("Indicator lookup: %s" % str(indicator))
-            lookup_result = self._get_all_indicator_section_results(indicator_type, indicator, start_date, end_date)
+            lookup_result = self._get_all_indicator_section_results(
+                indicator_type, indicator, start_date, end_date)
             if indicator_type != "feed":
                 if lookup_result:
                     if lookup_result["total"] == 0:
@@ -519,7 +532,8 @@ class Cymon(ISODevicePlugin):
             lookup_results = lookup_result_list[:max_hits]
         else:
             # sorting for latest hist to be on top
-            lookup_result_list.sort(key=lambda item: item['timestamp'], reverse=True)
+            lookup_result_list.sort(
+                key=lambda item: item['timestamp'], reverse=True)
             lookup_results = {
                 "black_list": list(black_list),
                 "unknown_list": list(unknown_list),
@@ -536,7 +550,8 @@ class Cymon(ISODevicePlugin):
             start_date = start_date.strftime("%Y-%m-%d")
         if end_date:
             end_date = end_date.strftime("%Y-%m-%d")
-        indicator_url = self._make_url(api_endpoint, size=100, startDate=start_date, endDate=end_date)
+        indicator_url = self._make_url(
+            api_endpoint, size=100, startDate=start_date, endDate=end_date)
         lookup_results = self._request("GET", request_url=indicator_url)
         return lookup_results
 
@@ -549,7 +564,7 @@ class Cymon(ISODevicePlugin):
             elif not is_list:
                 req_value = req_value.get()
                 # handling empty quotes
-                if isinstance(req_value, (str, unicode)):
+                if isinstance(req_value, str):
                     if req_value.strip() == "\"\"":
                         return None
                     elif req_value.strip() == "''":
@@ -578,12 +593,15 @@ class Cymon(ISODevicePlugin):
                 missing.append('proxyPassword')
 
             if len(missing) > 0:
-                raise KeyError("Missing required Proxy Parameters:\n%s" % ",".join(missing))
+                raise KeyError(
+                    "Missing required Proxy Parameters:\n%s" % ",".join(missing))
             if "/" in proxy_password:  # This seems to be a bug in urllib
-                self.logger.user_error(16003, " '/' Invalid character found in password!")
+                self.logger.user_error(
+                    16003, " '/' Invalid character found in password!")
             proxy_password = urllib.quote(proxy_password)
             proxy_auth = "%s:%s@" % (proxy_user, proxy_password)
-            proxies = {proxy_proto: "%s://%s%s:%s/" % (proxy_proto, proxy_auth, proxy_host, proxy_port)}
+            proxies = {proxy_proto: "%s://%s%s:%s/" %
+                       (proxy_proto, proxy_auth, proxy_host, proxy_port)}
         else:
             proxies = None
         return proxies
@@ -591,7 +609,8 @@ class Cymon(ISODevicePlugin):
     def _login(self):
         auth_url = str(self.server).rstrip("/") + "/auth/login"
         data = {"username": self.username, "password": self.password}
-        login_request = requests.request("POST", url=auth_url, data=json.dumps(data), verify=self.verify_secure)
+        login_request = requests.request(
+            "POST", url=auth_url, data=json.dumps(data), verify=self.verify_secure)
         login_data = login_request.json()
         token = login_data.get("jwt", None)
         message = login_data.get("message", "Error in generating token")
@@ -600,7 +619,8 @@ class Cymon(ISODevicePlugin):
 
     def _request(self, method, request_url, params=None, data=None, custom_headers=None, stream=False,
                  json_output=True):
-        self.logger.user_info("Sending request to Cymon global threat intelligence")
+        self.logger.user_info(
+            "Sending request to Cymon global threat intelligence")
         response = None
         try:
             if not self.session:
@@ -631,13 +651,17 @@ class Cymon(ISODevicePlugin):
                 # Request headers
                 if custom_headers:
                     session.headers.update(custom_headers)
-                response = session.request(method=method, url=request_url, data=data, timeout=self.timeout)
-                self.logger.user_info("[%s] Response status: %s" % (response.status_code, response.reason))
+                response = session.request(
+                    method=method, url=request_url, data=data, timeout=self.timeout)
+                self.logger.user_info("[%s] Response status: %s" % (
+                    response.status_code, response.reason))
                 if response.status_code == 404:
-                    self.logger.user_error(16004, "[Error 404] Resource not found")
+                    self.logger.user_error(
+                        16004, "[Error 404] Resource not found")
                     return None
                 elif response.status_code == 403:
-                    raise CymonException("Forbidden Access. Please check with administrator")
+                    raise CymonException(
+                        "Forbidden Access. Please check with administrator")
                 elif response.status_code == 400:
                     raise CymonError("Bad request")
                 else:
@@ -665,7 +689,8 @@ class Cymon(ISODevicePlugin):
             try:
                 response = response.json()
             except Exception as exp:
-                raise CymonException("Internal Error: Unable to decode response json: {}".format(exp))
+                raise CymonException(
+                    "Internal Error: Unable to decode response json: {}".format(exp))
 
         return response
 
