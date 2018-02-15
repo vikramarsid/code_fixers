@@ -27,7 +27,7 @@ repos:
     hooks:
     -   id: pyupgrade
 #-   repo: https://github.com/vikramarsid/code_fixers.git
-#    sha: 07668adb29fed881a9145902e9a1b617516f9e4b
+#    sha: 0306531133cf9a5b48535f6e955d8929753f7f6d
 #    hooks:
 #    -   id: error_number_fixer
 #        language_version: python2.7

@@ -7,8 +7,10 @@ import os
 import shutil
 import sys
 import traceback
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from lib2to3 import pygram, pytree
+from argparse import ArgumentParser
+from argparse import RawDescriptionHelpFormatter
+from lib2to3 import pygram
+from lib2to3 import pytree
 from lib2to3 import refactor
 from lib2to3.fixer_base import BaseFix
 from lib2to3.fixer_util import Comma
@@ -16,6 +18,7 @@ from lib2to3.pgen2 import driver
 from lib2to3.pytree import Leaf
 from textwrap import dedent
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 PATTERN = """
@@ -63,7 +66,8 @@ class CodeFixers(refactor.MultiprocessRefactoringTool):
         super(CodeFixers, self).__init__(*args, **kwargs)
 
     def get_fixers(self):
-        fixer = FixLoggerErrorNumber(self.options, self.fixer_log, self.error_series)
+        fixer = FixLoggerErrorNumber(
+            self.options, self.fixer_log, self.error_series)
         return [fixer], []
 
 
@@ -76,7 +80,8 @@ def generate_fixed_code(source_code, error_series):
 
 def parse_code(file_path):
     parser_driver = driver.Driver(pygram.python_grammar, pytree.convert)
-    parse_tree = parser_driver.parse_file(filename=file_path, encoding='ascii', debug=True)
+    parse_tree = parser_driver.parse_file(
+        filename=file_path, encoding='ascii', debug=True)
     source_code = str(parse_tree)
     return source_code
 
@@ -128,7 +133,8 @@ def get_full_file_name(file_path, append_suffix):
 def check_positive(value):
     int_value = int(value)
     if int_value <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+        raise argparse.ArgumentTypeError(
+            "%s is an invalid positive int value" % value)
     return int_value
 
 
@@ -150,10 +156,12 @@ def main(argv=None):
                             help="The base directory for all input file(s). [default: %(default)s]",
                             metavar="file_path", required=True)
         parser.add_argument("-o", "--output_directory", dest="output_dir",
-                            help="If supplied, all converted files will be written into this directory tree instead of input directory.",
+                            help="If supplied, all converted files will be written into "
+                                 "this directory tree instead of input directory.",
                             metavar="output_path")
         parser.add_argument("-a", "--append_suffix", dest="append_suffix",
-                            help="If supplied, all files output by this tool will have this appended to their filename.",
+                            help="If supplied, all files output by this "
+                                 "tool will have this appended to their filename.",
                             metavar="append_suffix")
         parser.add_argument('-e', "--error_series", dest="error_series",
                             help="Error series number", type=check_positive,
@@ -197,11 +205,13 @@ def main(argv=None):
                 source_files.extend(file_names)
                 break
         else:
-            raise Exception("Invalid file or directory path specified.\nPlease verify if the path exists")
+            raise Exception(
+                "Invalid file or directory path specified.\nPlease verify if the path exists")
 
         if source_files:
             for source_file in source_files:
-                logger.info("Fixing error number in plugin file at: [%s]" % source_file)
+                logger.info(
+                    "Fixing error number in plugin file at: [%s]" % source_file)
 
                 # check backup
                 if backup_file:
