@@ -287,17 +287,17 @@ class Cymon(ISODevicePlugin):
                 ISODevicePlugin.InputParameter(
                     typ=parameters.IPAddress.list,
                     name='IP',
-                    description="An IP address indicating the online location of a server or other computer.",
+                    description="An IP address indicating the online",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.DomainName.list,
                     name='domainName',
-                    description="A domain name for a website or server. Domains encompass a series of hostnames.",
+                    description="A domain name for a website or server.",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.HostName.list,
                     name='hostName',
-                    description="The hostname for a server located within a domain.",
+                    description="The hostname for a server located",
                     properties={'optional': True}),
                 ISODevicePlugin.InputParameter(
                     typ=parameters.String.list,
