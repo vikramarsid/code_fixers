@@ -5,6 +5,7 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: autopep8-wrapper
+        args: [-i, '--max-line-length=120']
     -   id: check-docstring-first
     -   id: check-json
     -   id: check-added-large-files
@@ -27,7 +28,7 @@ repos:
     hooks:
     -   id: pyupgrade
 #-   repo: https://github.com/vikramarsid/code_fixers.git
-#    sha: 9cab10151620be2b54e299076e60855e3808ff1c
+#    sha: 86912e9b9983222b20e6dfd6592d6a7ee60a62cb
 #    hooks:
 #    -   id: error_number_fixer
 #        language_version: python2.7

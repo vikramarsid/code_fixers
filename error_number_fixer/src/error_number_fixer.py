@@ -232,6 +232,7 @@ def main(argv=None):
                         fromfile='Before Fix',
                         tofile='After Fix',
                         n=0):
+                    line = ' '.join(line.split()) + '\n'
                     diffed_lines.append(line)
 
                 code_diff = "".join(diffed_lines)

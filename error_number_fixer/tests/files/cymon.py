@@ -187,8 +187,7 @@ def handle_errors(func):
         except KeyError as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(
-                16001, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(16001, 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.trace('Missing parameter value: '.format(exc))
             result.success = False
             result['statusMsg'] = parameters.String('Missing parameter value.'
@@ -198,8 +197,7 @@ def handle_errors(func):
         except Exception as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(
-                16002, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(16002, 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.trace(
                 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.success = False
@@ -596,12 +594,11 @@ class Cymon(ISODevicePlugin):
                 raise KeyError(
                     "Missing required Proxy Parameters:\n%s" % ",".join(missing))
             if "/" in proxy_password:  # This seems to be a bug in urllib
-                self.logger.user_error(
-                    16003, " '/' Invalid character found in password!")
+                self.logger.user_error(16003, " '/' Invalid character found in password!")
             proxy_password = urllib.quote(proxy_password)
             proxy_auth = "%s:%s@" % (proxy_user, proxy_password)
             proxies = {proxy_proto: "%s://%s%s:%s/" %
-                       (proxy_proto, proxy_auth, proxy_host, proxy_port)}
+                                    (proxy_proto, proxy_auth, proxy_host, proxy_port)}
         else:
             proxies = None
         return proxies
@@ -613,7 +610,7 @@ class Cymon(ISODevicePlugin):
             "POST", url=auth_url, data=json.dumps(data), verify=self.verify_secure)
         login_data = login_request.json()
         token = login_data.get("jwt", None)
-        message = login_data.get("message", "Error in generating token")
+        message = login_data.get("message", "Error in generating tok")
         self.logger.user_info(message)
         return token
 
@@ -656,8 +653,7 @@ class Cymon(ISODevicePlugin):
                 self.logger.user_info("[%s] Response status: %s" % (
                     response.status_code, response.reason))
                 if response.status_code == 404:
-                    self.logger.user_error(
-                        16004, "[Error 404] Resource not found")
+                    self.logger.user_error(16004, "[Error 404] Resource not found")
                     return None
                 elif response.status_code == 403:
                     raise CymonException(
