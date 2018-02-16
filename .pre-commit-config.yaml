@@ -27,8 +27,8 @@ repos:
     sha: v1.2.0
     hooks:
     -   id: pyupgrade
-#-   repo: https://github.com/vikramarsid/code_fixers.git
-#    sha: 86912e9b9983222b20e6dfd6592d6a7ee60a62cb
-#    hooks:
-#    -   id: error_number_fixer
-#        language_version: python2.7
+-   repo: https://github.com/vikramarsid/code_fixers.git
+    sha: 5462147fecbb1caff1196ca5559d59747f1c50e6
+    hooks:
+    -   id: error_number_fixer
+        language_version: python2.7

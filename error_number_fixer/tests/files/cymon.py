@@ -187,7 +187,7 @@ def handle_errors(func):
         except KeyError as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(16001, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(9001, 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.trace('Missing parameter value: '.format(exc))
             result.success = False
             result['statusMsg'] = parameters.String('Missing parameter value.'
@@ -197,7 +197,7 @@ def handle_errors(func):
         except Exception as exc:
             tb = traceback.format_exc(exc)
             result = self.makeResult()
-            self.logger.error(16002, 'Caught exception {} running command {}'.format(tb, func.__name__))
+            self.logger.error(9002, 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.trace(
                 'Caught exception {} running command {}'.format(tb, func.__name__))
             result.success = False
@@ -594,7 +594,7 @@ class Cymon(ISODevicePlugin):
                 raise KeyError(
                     "Missing required Proxy Parameters:\n%s" % ",".join(missing))
             if "/" in proxy_password:  # This seems to be a bug in urllib
-                self.logger.user_error(16003, " '/' Invalid character found in password!")
+                self.logger.user_error(9003, " '/' Invalid character found in password!")
             proxy_password = urllib.quote(proxy_password)
             proxy_auth = "%s:%s@" % (proxy_user, proxy_password)
             proxies = {proxy_proto: "%s://%s%s:%s/" %
@@ -653,7 +653,7 @@ class Cymon(ISODevicePlugin):
                 self.logger.user_info("[%s] Response status: %s" % (
                     response.status_code, response.reason))
                 if response.status_code == 404:
-                    self.logger.user_error(16004, "[Error 404] Resource not found")
+                    self.logger.user_error(9004, "[Error 404] Resource not found")
                     return None
                 elif response.status_code == 403:
                     raise CymonException(
@@ -663,7 +663,7 @@ class Cymon(ISODevicePlugin):
                 else:
                     response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            self.logger.user_error(16005, error)
+            self.logger.user_error(9005, error)
             raise CymonError(response.text)
 
         except Exception as exp:

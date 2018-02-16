@@ -1,4 +1,4 @@
-error-number-fixer
+error_number_fixer
 ==========
 
 Some out-of-the-box hook for pre-commit.
@@ -11,7 +11,7 @@ See also: https://github.com/pre-commit/pre-commit
 Add this to your `.pre-commit-config.yaml`
 
     -   repo: git@github.com:vikramarsid/code_fixers.git
-        sha: v1.2.0  # Use the ref you want to point at
+        sha: v1.0.0  # Use the ref you want to point at
         hooks:
         -   id: error_number_fixer
 
