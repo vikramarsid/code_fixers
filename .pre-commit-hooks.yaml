@@ -5,6 +5,5 @@
     language: python
     types: [python]
     args: [-i]
-    # for backward compatibility
-    files: ''
+    files: (^|/)src/.+\.py$
     minimum_pre_commit_version: 0.15.0

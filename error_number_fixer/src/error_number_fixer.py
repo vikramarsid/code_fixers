@@ -19,6 +19,7 @@ from lib2to3.fixer_util import Comma
 from lib2to3.pgen2 import driver
 from lib2to3.pytree import Leaf
 from textwrap import dedent
+
 logging.basicConfig()
 logger = logging.getLogger("error_number_fixer")
 
@@ -156,7 +157,7 @@ def main(argv=None):
 
         parser.add_argument('-i', "--input_directory", dest="input_dir",
                             help="The base directory for all input file(s). [default: %(default)s]",
-                            metavar="file_path", required=True)
+                            metavar="file_path", required=True, nargs='+')
         parser.add_argument("-o", "--output_directory", dest="output_dir",
                             help="If supplied, all converted files will be written into "
                                  "this directory tree instead of input directory.",
@@ -167,7 +168,7 @@ def main(argv=None):
                             metavar="append_suffix")
         parser.add_argument('-e', "--error_series", dest="error_series",
                             help="Error series number", type=check_positive,
-                            metavar="error_series", default=9000)
+                            metavar="error_series")
         parser.add_argument("-w", "--write", dest="write", action="store_true",
                             help="Write the modified code to the source file",
                             default=True)
@@ -180,7 +181,7 @@ def main(argv=None):
 
         # Process arguments
         args = parser.parse_args()
-        input_dir = args.input_dir
+        input_args = args.input_dir
         output_dir = args.output_dir
         append_suffix = args.append_suffix
         write = args.write
@@ -195,32 +196,37 @@ def main(argv=None):
             else:
                 logger.setLevel(logging.INFO)
 
-        logger.debug("Source Path: %s", input_dir)
+        logger.debug("Source Path: %s", input_args)
         logger.debug("Output Directory: %s", output_dir)
         logger.debug("verbosity level: %d", verbose)
 
         source_files = []
-        if os.path.isfile(input_dir):
-            source_files.append(input_dir)
-        elif os.path.isdir(input_dir):
-            for (dir_path, dir_names, file_names) in os.walk(input_dir):
-                for file_name in fnmatch.filter(file_names, '*.py'):
-                    file_name = os.path.join(dir_path, file_name)
-                    source_files.append(file_name)
-        else:
-            raise Exception(
-                "Invalid file or directory path specified.\nPlease verify if the path exists")
+        for input_arg in input_args:
+            if os.path.isfile(input_arg):
+                source_files.append(input_arg)
+            elif os.path.isdir(input_arg):
+                for (dir_path, dir_names, file_names) in os.walk(input_arg):
+                    for file_name in fnmatch.filter(file_names, '*.py'):
+                        file_name = os.path.join(dir_path, file_name)
+                        source_files.append(file_name)
+            else:
+                raise Exception(
+                    "Invalid file or directory path specified.\nPlease verify if the path exists")
 
         if source_files:
             for source_file in source_files:
-                logger.debug(
-                    "Fixing error number in plugin file at: [%s]" % source_file)
 
                 # check backup
                 if backup_file:
                     backup(source_file)
 
                 source_code = get_source_code(source_file)
+
+                # generate error series
+                if not error_series:
+                    file_name = os.path.basename(source_file).rstrip('.py')
+                    ascii_sum = sum(ord(char) - 64 for char in file_name)
+                    error_series = int(str(ascii_sum)[:3].ljust(5, '0'))
 
                 modified_code = generate_fixed_code(source_code, error_series)
 
@@ -238,6 +244,7 @@ def main(argv=None):
                 code_diff = "".join(diffed_lines)
 
                 if code_diff:
+                    print("\033[93mFixing error numbers: [%s]\033[0m" % source_file)
                     print(code_diff)
                     if write:
                         write_to_file(
