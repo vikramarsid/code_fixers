@@ -250,13 +250,12 @@ def main(argv=None):
                             source_file, modified_code, append_suffix)
                     elif output_dir:
                         write_to_file(output_dir, modified_code, append_suffix)
+                    print("\n\033[93mPlease verify modified files and add files by running "
+                          "`git add .` to approve modified files.\033[0m")
 
         else:
             logger.debug("No file found in the input directory")
             return 1
-
-        print("\n\033[93mPlease verify modified files and add files by running "
-              "`git add .` to approve modified files.\033[0m")
 
         return 0
 
