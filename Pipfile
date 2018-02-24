@@ -6,11 +6,13 @@ name = "pypi"
 
 
 [dev-packages]
-"coverage" = "*"
+
+coverage = "*"
 "flake8" = "*"
-"mock" = "*"
-"pytest" = "*"
+mock = "*"
+pytest = "*"
 
 
 [packages]
-"pre-commit" = ">=1.6.0"
+
+pre-commit = ">=1.6.0"

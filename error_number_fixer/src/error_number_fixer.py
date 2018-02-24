@@ -125,7 +125,10 @@ def backup(file_path):
 def get_full_file_name(file_path, append_suffix):
     head, tail = ntpath.split(file_path)
     tail = tail or ntpath.basename(head)
-    full_file_name = head + "/" + tail
+    if head:
+        full_file_name = head + "/" + tail
+    else:
+        full_file_name = tail
     if append_suffix:
         file_parts = tail.split(".")
         file_name = file_parts[0] + "_" + append_suffix
@@ -143,18 +146,13 @@ def check_positive(value):
 
 def main(argv=None):
     """Command line options."""
-    if argv is None:
-        argv = sys.argv
-    else:
-        argv = sys.argv.extend(argv)
-
-    program_name = os.path.basename(argv[0])
     try:
-
         # Setup argument parser
         parser = ArgumentParser(description="FSO Plugin Error Number Fixer",
                                 formatter_class=RawDescriptionHelpFormatter)
 
+        # parser.add_argument("filepaths", help="The base directory for all input file(s)",
+        #                     nargs='*')
         parser.add_argument('-i', "--input_directory", dest="input_dir",
                             help="The base directory for all input file(s). [default: %(default)s]",
                             metavar="file_path", required=True, nargs='+')
@@ -180,7 +178,8 @@ def main(argv=None):
                             default=0)
 
         # Process arguments
-        args = parser.parse_args()
+
+        args = parser.parse_args(argv)
         input_args = args.input_dir
         output_dir = args.output_dir
         append_suffix = args.append_suffix
@@ -254,22 +253,26 @@ def main(argv=None):
 
         else:
             logger.debug("No file found in the input directory")
-            sys.exit(1)
+            return 1
 
-        sys.exit(0)
+        print("\n\033[93mPlease verify modified files and add files by running "
+              "`git add .` to approve modified files.\033[0m")
 
-    except KeyboardInterrupt:
-        sys.exit(2)
+        return 0
+
+    except (KeyboardInterrupt, SystemExit):
+        return 2
 
     except Exception as exp:
+        program_name = "error_number_fixer"
         tb = traceback.format_exc(exp)
         logger.debug('Caught Exception: %s', exp)
         sys.stderr.write('Caught exception {}'.format(tb))
         indent = len(program_name) * " "
         sys.stderr.write(program_name + ": " + repr(exp) + "\n")
         sys.stderr.write(indent + "  for help use --help\n")
-        sys.exit(3)
+        return 3
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit(main())

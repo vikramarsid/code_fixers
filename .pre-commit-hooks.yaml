@@ -4,6 +4,13 @@
     entry: error_number_fixer
     language: python
     types: [python]
-    args: [-i]
+    args: ['-i']
     files: (^|/)src/.+\.py$
+    minimum_pre_commit_version: 0.15.0
+-   id: check_added_plugin_files
+    name: check added plugin files
+    description: "Checks for added plug-in files"
+    entry: check_added_plugin_files
+    language: python
+    files: ''
     minimum_pre_commit_version: 0.15.0
