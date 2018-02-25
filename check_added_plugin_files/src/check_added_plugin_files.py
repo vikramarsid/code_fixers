@@ -17,14 +17,12 @@ logger = logging.getLogger("check_added_plugin_files")
 
 CHECK_FILES = {
     "_CHANGELOG.md": 0,
-    ".png": 0,
     ".tar": 0,
     ".pyc": 0
 }
 
 ERROR_DETAILS = {
     "_CHANGELOG.md": "\n [ X ] CHANGELOG.md file is missing. Please generate required file to commit changes.",
-    ".png": "\n [ X ] Plug-in icon file is missing. Please place <plugin_name>.png in icons folder.",
     ".tar": "\n [ X ] Plug-in package file is missing. Please generate plug-in package(.tar) to commit changes.",
     ".package": "\n [ X ] Plug-in package file is missing. Please generate plug-in package(.package) to commit changes."
 }

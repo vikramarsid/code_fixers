@@ -213,6 +213,7 @@ def main(argv=None):
                     "Invalid file or directory path specified.\nPlease verify if the path exists")
 
         if source_files:
+            code_diff = None
             for source_file in source_files:
 
                 # check backup
@@ -225,9 +226,13 @@ def main(argv=None):
                 if not error_series:
                     file_name = os.path.basename(source_file).rstrip('.py')
                     ascii_sum = sum(ord(char) - 64 for char in file_name)
-                    error_series = int(str(ascii_sum)[:3].ljust(5, '0'))
+                    if ascii_sum < 0:
+                        ascii_sum = ascii_sum + 64
+                    error_number = int(str(ascii_sum)[:3].ljust(5, '0'))
+                else:
+                    error_number = error_series
 
-                modified_code = generate_fixed_code(source_code, error_series)
+                modified_code = generate_fixed_code(source_code, error_number)
 
                 # generate code diff
                 diffed_lines = []
@@ -250,8 +255,10 @@ def main(argv=None):
                             source_file, modified_code, append_suffix)
                     elif output_dir:
                         write_to_file(output_dir, modified_code, append_suffix)
-                    print("\n\033[93mPlease verify modified files and add files by running "
-                          "`git add .` to approve modified files.\033[0m")
+
+            if code_diff:
+                print("\n\033[93mPlease verify modified files and add files by running "
+                      "`git add .` to approve modified files.\033[0m\n")
 
         else:
             logger.debug("No file found in the input directory")
