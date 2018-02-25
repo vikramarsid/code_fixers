@@ -2,7 +2,6 @@
 from setuptools import find_packages
 from setuptools import setup
 
-
 setup(
     name='code_fixers',
     description='Some out-of-the-box hooks for pre-commit.',
@@ -29,7 +28,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'error_number_fixer = error_number_fixer.src.error_number_fixer:main'
+            'error_number_fixer = error_number_fixer.src.error_number_fixer:main',
+            'check_added_plugin_files = check_added_plugin_files.src.check_added_plugin_files:main'
         ],
     },
 )
